@@ -1,20 +1,17 @@
-// Importing the module or library 
 const express = require('express');
 const dotenv = require('dotenv');
+const authRoutes = require('./routes/auth'); // Import your auth routes
 
-// Load the environment variables
 dotenv.config();
 
-// Setup express variables
 const app = express();
-
-// Middleware to parse the json data 
 app.use(express.json());
 
-//testing route
-app.get('/', (req,res)=>{
-    res.send('Chikitsakalaya server is running');
-})
+// Use the auth routes for authentication-related requests
+app.use('/api/auth', authRoutes);
 
-// xport of the Express app
+app.get('/', (req, res) => {
+    res.send('Chikitsakalaya server is running');
+});
+
 module.exports = app;
