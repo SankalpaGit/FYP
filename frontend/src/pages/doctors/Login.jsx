@@ -1,21 +1,21 @@
 import React from 'react';
 
-const Signup = () => {
+const Login = () => {
   return (
     <div className="flex flex-col lg:flex-row h-screen bg-custom-bg">
       {/* Image Section (hidden on mobile, displayed on large screens) */}
       <div className="hidden lg:block lg:w-1/2">
         <img
-          src="/doctor/signup_doctor.jpeg" // Replace with your image link
-          alt="Signup"
-          className="object-contain w-full h-full" // Adjust height as needed
+          src="/doctor/login.jpeg" // Replace with your image link
+          alt="Login"
+          className="object-contain w-full h-full"
         />
       </div>
 
       {/* Form Section */}
-      <div className="flex justify-center items-center w-full lg:w-1/2 p-8">
+      <div className="flex justify-center items-center w-full lg:w-1/2 p-8 min-h-screen lg:min-h-0">
         <form className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
-          <h2 className="text-2xl font-bold mb-6 text-teal-700 text-center">Register As Doctor</h2>
+          <h2 className="text-2xl font-bold mb-6 text-teal-700 text-center">Login</h2>
           
           {/* Gmail Input */}
           <div className="mb-4">
@@ -31,7 +31,7 @@ const Signup = () => {
           </div>
           
           {/* Password Input */}
-          <div className="mb-4">
+          <div className="mb-6">
             <label className="block text-gray-700 mb-2" htmlFor="password">
               Password
             </label>
@@ -43,37 +43,12 @@ const Signup = () => {
             />
           </div>
 
-          {/* Licence Number Input */}
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2" htmlFor="licence">
-              Licence Number
-            </label>
-            <input
-              id="licence"
-              type="text"
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:border-teal-300"
-              placeholder="1234-5678"
-            />
-          </div>
-
-          {/* File Upload Input */}
-          <div className="mb-6">
-            <label className="block text-gray-700 mb-2" htmlFor="file">
-            Licence Document
-            </label>
-            <input
-              id="file"
-              type="file"
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:border-teal-300"
-            />
-          </div>
-
           {/* Submit Button */}
           <button
             type="submit"
             className="w-full bg-teal-700 text-white py-3 rounded-lg hover:bg-teal-600 focus:outline-none focus:ring focus:ring-teal-300"
           >
-            Get Register
+            Login
           </button>
         </form>
       </div>
@@ -81,4 +56,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default Login;
