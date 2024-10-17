@@ -4,7 +4,7 @@ const upload = require('../config/multer');
 const RegisterDoctor = require('../models/RegisterDoctor');
 
 // POST route to register doctor with file upload
-router.post('/doctors/register', upload.single('licenceDocument'), async (req, res) => {
+router.post('/doctors/register', upload.single('licenceDocument'), upload.handleFileUploadError, async (req, res) => {
   try {
     const { email, password, licenceNumber } = req.body;
     const licenceDocument = req.file ? req.file.path : null;
@@ -13,17 +13,19 @@ router.post('/doctors/register', upload.single('licenceDocument'), async (req, r
       return res.status(400).json({ error: 'Licence document is required' });
     }
 
+    // Save the new doctor registration data to the database
     const newDoctor = await RegisterDoctor.create({
       email,
       password,
       licenceNumber,
       licenceDocument, // Save the file path in the database
-      status: 'pending' // Initial status is pending
+      status: 'pending' // Initial status is 'pending' for admin approval
     });
 
+    // Respond with success message and the new doctor data
     res.status(201).json({ message: 'Registration submitted for approval', doctor: newDoctor });
   } catch (error) {
-    console.error(error);
+    console.error('Error during doctor registration:', error);
     res.status(500).json({ error: 'Error during registration' });
   }
 });

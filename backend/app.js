@@ -3,10 +3,15 @@ const dotenv = require('dotenv');
 const sequelize = require('./config/database'); // Import the configured sequelize instance
 const RegisterDoctor = require('./models/RegisterDoctor'); // Import your model
 const doctorRoutes = require('./routes/doctorRegistrationRoutes'); // Import doctor authentication related routes
+const cors = require('cors'); 
+
+// Enable CORS for all routes and origins
+
 
 dotenv.config();
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 // Use of the route
