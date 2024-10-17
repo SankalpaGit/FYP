@@ -9,3 +9,4 @@
 
 # Ignore .env in the backend directory
 /backend/.env
+backend/uploads/
