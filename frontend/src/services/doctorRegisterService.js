@@ -1,17 +1,17 @@
 // thi doesn register the doctor but it store registration request
 
-const API_URL = 'http://localhost:5000/api'; // Update with your API base URL
+// src/services/doctorService.js
+const API_URL = 'http://localhost:5000/api/doctors/register'; // Ensure this points to your backend
 
 export const registerDoctor = async (formData) => {
   try {
-    const response = await fetch(`${API_URL}/doctors/register`, {
+    const response = await fetch(API_URL, {
       method: 'POST',
       body: formData,
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Registration failed');
+      throw new Error('Network response was not ok');
     }
 
     return await response.json();
@@ -20,4 +20,3 @@ export const registerDoctor = async (formData) => {
     throw new Error('Registration failed');
   }
 };
-
