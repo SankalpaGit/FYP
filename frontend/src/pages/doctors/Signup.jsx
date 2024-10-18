@@ -8,6 +8,8 @@ const Signup = () => {
     licenceNumber: '',
     licenceDocument: null,
   });
+  const [message, setMessage] = useState(''); // State for messages
+  const [error, setError] = useState(''); // State for error messages
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,7 +22,9 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent the default form submission
-
+    setMessage('');
+    setError('');
+    
     const form = new FormData(); // Create a FormData object
     form.append('email', formData.email);
     form.append('password', formData.password);
@@ -29,9 +33,9 @@ const Signup = () => {
 
     try {
       const data = await registerDoctor(form); // Call the service function
-      alert(data.message); // Display successful registration message
+      setMessage(data.message); // Display success message
     } catch (error) {
-      alert(error.message); // Display error message
+      setError(error.message || 'Registration failed'); // Display error message
     }
   };
 
@@ -51,6 +55,10 @@ const Signup = () => {
         <form className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md" onSubmit={handleSubmit}>
           <h2 className="text-2xl font-bold mb-6 text-teal-700 text-center">Register As Doctor</h2>
           
+          {/* Display Success or Error Message */}
+          {message && <p className="text-green-500 text-center mb-4">{message}</p>}
+          {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+
           {/* Gmail Input */}
           <div className="mb-4">
             <label className="block text-gray-700 mb-2" htmlFor="email">Gmail</label>

@@ -1,22 +1,18 @@
 // thi doesn register the doctor but it store registration request
 
 // src/services/doctorService.js
-const API_URL = 'http://localhost:5000/api/doctors/register'; // Ensure this points to your backend
+import axios from 'axios';
+
+const API_URL = 'http://localhost:5000/api/doctors/register'; // Backend URL
 
 export const registerDoctor = async (formData) => {
   try {
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      body: formData,
+    const response = await axios.post(API_URL, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
     });
-
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-
-    return await response.json();
+    return response.data;
   } catch (error) {
     console.error('Error during doctor registration:', error);
-    throw new Error('Registration failed');
+    throw error.response ? error.response.data : new Error('Registration failed');
   }
 };
