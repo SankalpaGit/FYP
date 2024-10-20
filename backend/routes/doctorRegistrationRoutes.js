@@ -7,8 +7,28 @@ const generateToken = require('../utils/jwtToken');
 const verifyToken = require('../middlewares/authMiddleware');
 const bcrypt = require('bcrypt');
 
+
 // POST route to register doctor with file upload
-router.post('/doctors/register', upload.single('licenceDocument'), upload.handleFileUploadError, async (req, res) => {
+router.post('/doctors/register', async (req, res, next) => {
+  try {
+    const { email, password, licenceNumber } = req.body;
+
+    // Validate email and other fields before uploading the file
+    if (email) {
+      return res.status(400).json({ error: 'Invalid email format' });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters long' });
+    }
+
+    // Proceed to file upload if validations pass
+    next();
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error during registration' });
+  }
+}, upload.single('licenceDocument'), async (req, res) => {
   try {
     const { email, password, licenceNumber } = req.body;
     const licenceDocument = req.file ? req.file.path : null;
@@ -20,13 +40,12 @@ router.post('/doctors/register', upload.single('licenceDocument'), upload.handle
     // Hash the password before storing it
     const hashedPassword = await hashPassword(password);
 
-    // Create a new doctor with hashed password
     const newDoctor = await RegisterDoctor.create({
       email,
-      password: hashedPassword, // Save the hashed password
+      password: hashedPassword,
       licenceNumber,
-      licenceDocument, // Save the file path in the database
-      status: 'pending' // Initial status is pending
+      licenceDocument,
+      status: 'pending'
     });
 
     res.status(201).json({ message: 'Registration submitted for approval', doctor: newDoctor });
@@ -35,6 +54,7 @@ router.post('/doctors/register', upload.single('licenceDocument'), upload.handle
     res.status(500).json({ error: 'Error during registration' });
   }
 });
+
 
 // GET route to list all doctors (for admin to view)
 router.get('/doctors/all', async (req, res) => {
