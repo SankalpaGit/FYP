@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { registerDoctor } from '../../services/doctorRegisterService'; // Import the API function
+import { registerDoctor } from '../../services/doctorRegisterService'; // Import the service
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -8,24 +8,25 @@ const Signup = () => {
     licenceNumber: '',
     licenceDocument: null,
   });
-  const [message, setMessage] = useState(''); // State for messages
-  const [error, setError] = useState(''); // State for error messages
+
+  const [errors, setErrors] = useState(''); // To store and display validation errors
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === 'licenceDocument') {
-      setFormData({ ...formData, [name]: e.target.files[0] }); // Store the file
+      setFormData({ ...formData, [name]: e.target.files[0] });
     } else {
       setFormData({ ...formData, [name]: value });
     }
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent the default form submission
-    setMessage('');
-    setError('');
-    
-    const form = new FormData(); // Create a FormData object
+    e.preventDefault();
+
+    // Clear previous errors
+    setErrors('');
+
+    const form = new FormData();
     form.append('email', formData.email);
     form.append('password', formData.password);
     form.append('licenceNumber', formData.licenceNumber);
@@ -33,33 +34,29 @@ const Signup = () => {
 
     try {
       const data = await registerDoctor(form); // Call the service function
-      setMessage(data.message); // Display success message
+      alert(data.message); // Display successful registration message
     } catch (error) {
-      setError(error.message || 'Registration failed'); // Display error message
+      setErrors(error.message); // Display error message on screen
     }
   };
 
   return (
     <div className="flex flex-col lg:flex-row h-screen bg-custom-bg">
-      {/* Image Section (hidden on mobile, displayed on large screens) */}
       <div className="hidden lg:block lg:w-1/2">
         <img
-          src="/doctor/signup_doctor.jpeg" // Replace with your image link
+          src="/doctor/signup_doctor.jpeg"
           alt="Signup"
-          className="object-contain w-full h-full" // Adjust height as needed
+          className="object-contain w-full h-full"
         />
       </div>
 
-      {/* Form Section */}
       <div className="flex justify-center items-center w-full lg:w-1/2 p-8">
         <form className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md" onSubmit={handleSubmit}>
           <h2 className="text-2xl font-bold mb-6 text-teal-700 text-center">Register As Doctor</h2>
-          
-          {/* Display Success or Error Message */}
-          {message && <p className="text-green-500 text-center mb-4">{message}</p>}
-          {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
-          {/* Gmail Input */}
+          {/* Error message display */}
+          {errors && <p className="text-red-500 text-center mb-4">{errors}</p>}
+
           <div className="mb-4">
             <label className="block text-gray-700 mb-2" htmlFor="email">Gmail</label>
             <input
@@ -72,8 +69,7 @@ const Signup = () => {
               required
             />
           </div>
-          
-          {/* Password Input */}
+
           <div className="mb-4">
             <label className="block text-gray-700 mb-2" htmlFor="password">Password</label>
             <input
@@ -87,7 +83,6 @@ const Signup = () => {
             />
           </div>
 
-          {/* Licence Number Input */}
           <div className="mb-4">
             <label className="block text-gray-700 mb-2" htmlFor="licence">Licence Number</label>
             <input
@@ -101,7 +96,6 @@ const Signup = () => {
             />
           </div>
 
-          {/* File Upload Input */}
           <div className="mb-6">
             <label className="block text-gray-700 mb-2" htmlFor="file">Licence Document</label>
             <input
@@ -114,7 +108,6 @@ const Signup = () => {
             />
           </div>
 
-          {/* Submit Button */}
           <button
             type="submit"
             className="w-full bg-teal-700 text-white py-3 rounded-lg hover:bg-teal-600 focus:outline-none focus:ring focus:ring-teal-300"
