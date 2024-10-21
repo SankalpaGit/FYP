@@ -10,6 +10,7 @@ const Signup = () => {
   });
 
   const [errors, setErrors] = useState(''); // To store and display validation errors
+  const [successMessage, setSuccessMessage] = useState(''); // To store and display success messages
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,8 +24,9 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Clear previous errors
+    // Clear previous messages
     setErrors('');
+    setSuccessMessage('');
 
     const form = new FormData();
     form.append('email', formData.email);
@@ -34,9 +36,11 @@ const Signup = () => {
 
     try {
       const data = await registerDoctor(form); // Call the service function
-      alert(data.message); // Display successful registration message
+
+      // Show the success message returned from the backend
+      setSuccessMessage(data.message); // Set success message
     } catch (error) {
-      setErrors(error.message); // Display error message on screen
+      setErrors(error.message); // Set error message
     }
   };
 
@@ -56,6 +60,9 @@ const Signup = () => {
 
           {/* Error message display */}
           {errors && <p className="text-red-500 text-center mb-4">{errors}</p>}
+
+          {/* Success message display */}
+          {successMessage && <p className="text-green-500 text-center mb-4">{successMessage}</p>}
 
           <div className="mb-4">
             <label className="block text-gray-700 mb-2" htmlFor="email">Gmail</label>
