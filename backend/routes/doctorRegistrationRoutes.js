@@ -9,29 +9,24 @@ const bcrypt = require('bcrypt');
 
 
 // POST route to register doctor with file upload
-router.post('/doctors/register', async (req, res, next) => {
+router.post('/doctors/register', upload.single('licenceDocument'), upload.handleFileUploadError, async (req, res) => {
   try {
     const { email, password, licenceNumber } = req.body;
+    const licenceDocument = req.file ? req.file.path : null; // Get the uploaded file path
 
-    // Validate email and other fields before uploading the file
-    if (email) {
-      return res.status(400).json({ error: 'Invalid email format' });
+    console.log('Email received:', email);
+    console.log('Password received:', password);
+    console.log('Licence Number received:', licenceNumber);
+    console.log('Licence Document received:', licenceDocument);
+
+    // Validate the fields
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
     }
 
-    if (password.length < 8) {
+    if (!password || password.length < 8) {
       return res.status(400).json({ error: 'Password must be at least 8 characters long' });
     }
-
-    // Proceed to file upload if validations pass
-    next();
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error during registration' });
-  }
-}, upload.single('licenceDocument'), async (req, res) => {
-  try {
-    const { email, password, licenceNumber } = req.body;
-    const licenceDocument = req.file ? req.file.path : null;
 
     if (!licenceDocument) {
       return res.status(400).json({ error: 'Licence document is required' });
@@ -40,6 +35,7 @@ router.post('/doctors/register', async (req, res, next) => {
     // Hash the password before storing it
     const hashedPassword = await hashPassword(password);
 
+    // Save doctor registration
     const newDoctor = await RegisterDoctor.create({
       email,
       password: hashedPassword,
@@ -48,13 +44,14 @@ router.post('/doctors/register', async (req, res, next) => {
       status: 'pending'
     });
 
-    res.status(201).json({ message: 'Registration submitted for approval', doctor: newDoctor });
+    // Respond with success
+    return res.status(201).json({ message: 'Registration submitted for approval', doctor: newDoctor });
+
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error during registration' });
+    return res.status(500).json({ error: 'Error during registration' });
   }
 });
-
 
 // GET route to list all doctors (for admin to view)
 router.get('/doctors/all', async (req, res) => {
