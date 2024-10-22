@@ -1,11 +1,12 @@
-import React from 'react'
+import React from 'react';
+import AdminLayout from '../../layouts/AdminLayout';
 
 const Dashboard = () => {
   return (
-    <div>
-      <p>Welcome Doctor unknown</p>
-    </div>
-  )
-}
+    <AdminLayout>
+      <p>hello</p>
+    </AdminLayout>
+  );
+};
 
-export default Dashboard
+export default Dashboard;
