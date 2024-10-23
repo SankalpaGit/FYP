@@ -1,27 +1,50 @@
-import React, { useState, useRef } from 'react';
+// src/components/AdminLogin.js
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-const AdminOtpLogin = () => {
-  const [step, setStep] = useState(1); // Step 1: Email input, Step 2: OTP input
-  const [otp, setOtp] = useState(Array(6).fill('')); // Store each OTP digit in an array
-  const otpRefs = useRef([]);
+const AdminLogin = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [step, setStep] = useState(1); // Step 1: Email, Step 2: Password
+  const [error, setError] = useState('');
+  const [emailVerified, setEmailVerified] = useState(false); // Flag for email verification
+  const navigate = useNavigate();
 
-  const handleOtpChange = (value, index) => {
-    if (/^[0-9]?$/.test(value)) { // Ensure only digits are entered
-      const newOtp = [...otp];
-      newOtp[index] = value;
-      setOtp(newOtp);
+  // Step 1: Verify if the email exists
+  const handleEmailSubmit = async (e) => {
+    e.preventDefault(); // Prevent page refresh
+    setError('');
 
-      // Auto-focus to next input
-      if (value && index < 5) {
-        otpRefs.current[index + 1].focus();
+    try {
+      // Make request to check if email exists in the system
+      const response = await axios.post('http://localhost:5000/api/admin/verify-email', { email });
+
+      if (response.data.exists) {
+        setEmailVerified(true); // Move to password step
+        setStep(2); // Change step to show password input
+      } else {
+        setError('Email not found.');
       }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Error verifying email.');
     }
   };
 
-  // for performing auto input field chnge when filled out
-  const handleKeyDown = (e, index) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
-      otpRefs.current[index - 1].focus(); // Move to the previous field on backspace
+  // Step 2: Handle login with password
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault(); // Prevent page refresh
+    setError('');
+
+    try {
+      // Make POST request for login
+      const response = await axios.post('http://localhost:5000/api/admin/login', { email, password });
+
+      // Save token and redirect on successful login
+      localStorage.setItem('token', response.data.token);
+      navigate('/admin/dashboard');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Login failed.');
     }
   };
 
@@ -31,58 +54,65 @@ const AdminOtpLogin = () => {
         <h2 className="text-3xl font-bold text-center text-gray-700 mb-6">Admin Login</h2>
 
         {step === 1 ? (
-          <div>
+          <form onSubmit={handleEmailSubmit}>
             <div>
               <label htmlFor="email" className="block text-sm text-gray-600">
-                Enter Gmail Address
+                Enter Email Address
               </label>
               <input
                 id="email"
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-2 mt-2 text-gray-700 bg-gray-200 rounded-md focus:outline-none"
-                placeholder="admin@gmail.com"
+                placeholder="admin@example.com"
+                required
               />
             </div>
+
+            {error && <p className="text-red-600 mt-4">{error}</p>}
+
             <div className="mt-6">
               <button
+                type="submit"
                 className="w-full px-4 py-2 text-white bg-teal-600 rounded-md hover:bg-teal-800 focus:outline-none transition-colors"
-                onClick={() => setStep(2)}
               >
-                Proceed
+                Verify Email
               </button>
             </div>
-          </div>
+          </form>
         ) : (
-          <div>
+          <form onSubmit={handlePasswordSubmit}>
             <div>
-              <label className="block text-sm text-gray-600">Enter 6-Digit OTP</label>
-              <div className="flex space-x-2 justify-center mt-4">
-                {otp.map((digit, index) => (
-                  <input
-                    key={index}
-                    type="text"
-                    maxLength="1"
-                    value={digit}
-                    onChange={(e) => handleOtpChange(e.target.value, index)}
-                    onKeyDown={(e) => handleKeyDown(e, index)}
-                    ref={(el) => (otpRefs.current[index] = el)} // Store the input refs
-                    className="w-10 h-12 text-center text-xl border border-gray-300 rounded-md focus:border-teal-700 focus:outline-none focus:ring-1 focus:ring-teal-500 bg-gray-200 transition-shadow"
-                  />
-                ))}
-              </div>
+              <label htmlFor="password" className="block text-sm text-gray-600">
+                Enter Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-2 mt-2 text-gray-700 bg-gray-200 rounded-md focus:outline-none"
+                placeholder="********"
+                required
+              />
             </div>
+
+            {error && <p className="text-red-600 mt-4">{error}</p>}
+
             <div className="mt-6">
               <button
+                type="submit"
                 className="w-full px-4 py-2 text-white bg-teal-600 rounded-md hover:bg-teal-800 focus:outline-none transition-colors"
               >
                 Login as Admin
               </button>
             </div>
-          </div>
+          </form>
         )}
       </div>
     </div>
   );
 };
 
-export default AdminOtpLogin;
+export default AdminLogin;
