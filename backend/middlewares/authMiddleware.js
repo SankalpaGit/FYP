@@ -1,9 +1,12 @@
 // middlewares/authMiddleware.js
 const jwt = require('jsonwebtoken');
-const secretKey = 'your_secret_key'; // Replace with your actual secret key (can be stored in environment variables)
+const dotenv = require('dotenv');
+
+const secretKey = process.env.JWT_SECRET; // Retrieve the secret key from the .env file
 
 const verifyToken = (req, res, next) => {
-  const token = req.header('Authorization'); // The token should be sent in the Authorization header
+  const authHeader = req.header('Authorization');
+  const token = authHeader && authHeader.split(' ')[1]; // Extract the token from 'Bearer <token>'
 
   if (!token) {
     return res.status(401).json({ error: 'Access denied. No token provided.' });

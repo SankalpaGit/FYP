@@ -2,6 +2,8 @@ const express = require('express');
 const dotenv = require('dotenv');
 const sequelize = require('./config/database'); // Import the configured sequelize instance
 const RegisterDoctor = require('./models/RegisterDoctor'); // Import your model
+const Admin = require('./models/Admin'); // Import the Admin model
+
 const doctorRoutes = require('./routes/doctorRegistrationRoutes'); // Import doctor authentication related routes
 const cors = require('cors'); 
 
