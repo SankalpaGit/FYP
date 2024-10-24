@@ -17,8 +17,7 @@ router.post('/admin/login', async (req, res) => {
     }
 
     // Compare the password with the hashed password
-    const isMatch = await bcrypt.compare(password, admin.password);
-    if (!isMatch) {
+    if (password !== admin.password) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 

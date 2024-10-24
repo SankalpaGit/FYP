@@ -6,7 +6,7 @@ const Admin = require('./models/Admin'); // Import the Admin model
 
 const doctorRoutes = require('./routes/doctorRegistrationRoutes'); // Import doctor authentication related routes
 const cors = require('cors'); 
-
+const adminLoginRoute = require('./routes/adminRoutes')
 // Enable CORS for all routes and origins
 
 
@@ -18,8 +18,9 @@ app.use(express.json());
 
 // Use of the route
 app.use('/api', doctorRoutes); // Prefix with '/api' or any base URL 
-
+app.use('/api', adminLoginRoute)
 // Authenticate and sync models
+
 sequelize.authenticate()
   .then(() => {
     console.log('Database connected...');
