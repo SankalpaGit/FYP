@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { FaTachometerAlt, FaUserMd, FaUsers,  FaBars, FaCaretDown, FaCommentDots, FaTags, FaCalendarCheck, FaMoneyBillAlt, FaCommentAlt,  } from 'react-icons/fa';
+import { FaTachometerAlt, FaUserMd, FaUsers, FaBars, FaCaretDown, FaCommentDots, FaTags, FaCalendarCheck, FaMoneyBillAlt, FaCommentAlt, } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 const AdminSidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -33,10 +34,12 @@ const AdminSidebar = () => {
             <span className={`${!isOpen && 'hidden'}`}>Dashboard</span>
           </li>
 
-          {/* Doctor Approval */}
+          {/* Doctor Request */}
           <li className="text-white flex items-center px-4 py-2 hover:bg-teal-600 cursor-pointer">
-            <FaUserMd className="mr-4" />
-            <span className={`${!isOpen && 'hidden'}`}>Doctor Approval</span>
+            <Link to="/admin/request" className="flex items-center w-full">
+              <FaUserMd className="mr-4" />
+              <span className={`${!isOpen && 'hidden'}`}>Doctor Request</span>
+            </Link>
           </li>
 
           {/* User Management Section with Dropdown */}
@@ -100,7 +103,7 @@ const AdminSidebar = () => {
             <FaCommentAlt className="mr-4" />
             <span className={`${!isOpen && 'hidden'}`}>Feedback</span>
           </li>
-          
+
         </ul>
       </nav>
     </div>

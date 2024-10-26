@@ -42,6 +42,7 @@ const AdminLogin = () => {
 
       // Save token and redirect on successful login
       localStorage.setItem('token', response.data.token);
+      console.log("login successful")
       navigate('/admin/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed.');

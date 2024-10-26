@@ -7,6 +7,7 @@ import Dashboard from "./pages/admin/Dashboard";
 import Credential from "./pages/admin/Credential";
 import DoctorDashboard from "./pages/doctors/DoctorDashboard";
 import ProtectedRoute from "./secure/ProtectedRoute";
+import DoctorApproval from "./pages/admin/DoctorApproval";
 
 function App() {
 
@@ -18,6 +19,7 @@ function App() {
         <ProtectedRoute>
           <Dashboard />
         </ProtectedRoute>} />
+      <Route path="admin/request" element={<DoctorApproval/>} />
       <Route path="/" element={<LandingPage />} />
       <Route path="/admin" element={<Credential />} />
       <Route path="/doctor/dashboard" element={<DoctorDashboard />} />

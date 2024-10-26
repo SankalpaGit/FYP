@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom';
 
 // Utility function to check authentication
 const isAuthenticated = () => {
-  return !!localStorage.getItem("authToken"); // Adjust based on your auth storage
+  return !!localStorage.getItem("token"); // Adjust based on your auth storage
 };
 
 // ProtectedRoute component
