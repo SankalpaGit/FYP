@@ -19,7 +19,7 @@ function App() {
         <ProtectedRoute>
           <Dashboard />
         </ProtectedRoute>} />
-      <Route path="admin/request" element={<DoctorApproval/>} />
+      <Route path="admin/request" element={<DoctorApproval />} />
       <Route path="/" element={<LandingPage />} />
       <Route path="/admin" element={<Credential />} />
       <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
