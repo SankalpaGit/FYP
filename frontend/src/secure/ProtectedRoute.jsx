@@ -1,76 +1,63 @@
-import React, { useEffect, useState, useCallback } from 'react';
+// src/secure/ProtectedRoute.jsx
+import React, { useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { jwtDecode } from "jwt-decode";
-import axios from 'axios';
-
-const IDLE_TIMEOUT = 60 * 60 * 1000; // 1 hour
-
-const isAuthenticated = () => {
-  return !!localStorage.getItem("token");
-};
-
-const refreshToken = async () => {
-  try {
-    const response = await axios.post("/api/refresh-token", {
-      token: localStorage.getItem("token")
-    });
-    const newToken = response.data.token;
-    localStorage.setItem("token", newToken);
-    return true;
-  } catch (error) {
-    console.error("Token refresh failed:", error);
-    return false;
-  }
-};
 
 const ProtectedRoute = ({ children }) => {
-  const [isActive, setIsActive] = useState(true);
   const navigate = useNavigate();
+  const [redirect, setRedirect] = useState(false);
 
-  const checkAndRefreshToken = useCallback(async () => {
+  const isAuthenticated = () => {
     const token = localStorage.getItem("token");
-    if (token) {
-      const decoded = jwt_decode(token);
-      const expiresSoon = decoded.exp * 1000 - Date.now() < 10 * 60 * 1000; // within 10 min of expiration
+    const tokenExpiry = parseInt(localStorage.getItem("tokenExpiry"), 10);
 
-      if (expiresSoon) {
-        const refreshed = await refreshToken();
-        if (!refreshed) {
-          localStorage.removeItem("token");
-          navigate("/login");
-        }
-      }
-    } else {
-      navigate("/login");
+    if (token && tokenExpiry && tokenExpiry > Date.now()) {
+      return true;
     }
-  }, [navigate]);
 
-  const resetIdleTimer = useCallback(() => {
-    setIsActive(true);
-  }, []);
+    localStorage.removeItem("token");
+    localStorage.removeItem("tokenExpiry");
+    return false;
+  };
 
   useEffect(() => {
-    checkAndRefreshToken();
+    let timer, redirectTimer;
 
-    const events = ["mousemove", "keydown", "click"];
-    events.forEach((event) => window.addEventListener(event, resetIdleTimer));
+    if (isAuthenticated()) {
+      timer = setTimeout(() => {
+        // Display alert with custom message
+        window.alert("Session expired. You will be redirected shortly.");
 
-    const idleTimer = setInterval(() => {
-      if (!isActive) {
-        localStorage.removeItem("token");
-        navigate("/login");
-      } else {
-        setIsActive(false);
-      }
-    }, IDLE_TIMEOUT);
+        // Wait for 2 seconds before redirecting
+        redirectTimer = setTimeout(() => {
+          localStorage.removeItem("token");
+          localStorage.removeItem("tokenExpiry");
+          localStorage.setItem("sessionExpired", "true");
+          setRedirect(true);
+        }, 1000); // 1 seconds
+      }, 10 * 6 * 10000); // 10 min for session expiration
+    } else {
+      navigate("/admin");
+    }
 
     return () => {
-      events.forEach((event) => window.removeEventListener(event, resetIdleTimer));
-      clearInterval(idleTimer);
+      clearTimeout(timer);
+      clearTimeout(redirectTimer);
     };
-  }, [checkAndRefreshToken, resetIdleTimer, isActive, navigate]);
+  }, [navigate]);
 
-  return isAuthenticated() ? children : <Navigate to="/login" />;
+  if (redirect) {
+    return <Navigate to="/admin" />;
+  }
+
+  if (!isAuthenticated()) {
+    return <Navigate to="/admin" />;
+  }
+
+  return (
+    <>
+      {children}
+    </>
+  );
 };
 
 export default ProtectedRoute;

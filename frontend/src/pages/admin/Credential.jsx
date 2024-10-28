@@ -1,4 +1,4 @@
-// src/components/AdminLogin.js
+// src/components/AdminLogin.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -42,7 +42,10 @@ const AdminLogin = () => {
 
       // Save token and redirect on successful login
       localStorage.setItem('token', response.data.token);
-      console.log("login successful")
+      const expirationTime = Date.now() + 10 * 1000; // Set expiration time to 10 seconds
+      localStorage.setItem('tokenExpiry', expirationTime.toString());
+      
+      console.log("Login successful, navigating to /admin/dashboard");
       navigate('/admin/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed.');
