@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { FaCheck, FaTimes, FaEye } from 'react-icons/fa';
+import { FaCheck, FaTimes, FaEye, FaExclamationTriangle } from 'react-icons/fa';
 import AdminLayout from '../../layouts/AdminLayout';
 
 const DoctorApproval = () => {
@@ -48,103 +48,98 @@ const DoctorApproval = () => {
         setSelectedDoctors(doctors.length === selectedDoctors.length ? [] : doctors.map(doc => doc.id));
     };
 
-    
-
-    if (error) return <p>{error}</p>;
-
     return (
         <AdminLayout>
-            <div className="">
-                <h1 className="text-3xl font-bold text-gray-600 mb-6">Doctor Approval List</h1>
-
-                <div className="flex justify-end space-x-3 mb-4">
-                    <button
-                        className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded shadow-md transition-transform transform hover:scale-105"
-                        disabled={selectedDoctors.length === 0}
-                    >
-                        Approve Selected
-                    </button>
-                    <button
-                        className="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded shadow-md transition-transform transform hover:scale-105"
-                        disabled={selectedDoctors.length === 0}
-                    >
-                        Reject Selected
-                    </button>
-                </div>
-
-                <table className="min-w-full border-collapse border border-gray-300 ">
-                    <thead>
-                        <tr className="bg-gray-800 text-white">
-                            <th className="px-6 py-3 border border-gray-300">
-                                <input type="checkbox" onChange={handleSelectAll} checked={selectedDoctors.length === doctors.length} />
-                            </th>
-                            <th className="px-6 py-3 border border-gray-300">ID</th>
-                            <th className="px-6 py-3 border border-gray-300">Email</th>
-                            <th className="px-6 py-3 border border-gray-300">Licence Number</th>
-                            <th className="px-6 py-3 border border-gray-300 text-center">Licence Document</th>
-                            <th className="px-6 py-3 border border-gray-300">Status</th>
-                            <th className="px-6 py-3 border border-gray-300 text-center">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {loading ? (
-                            Array.from({ length: 5 }).map((_, index) => (
-                                <tr key={index} className="animate-pulse">
-                                    <td className="border px-6 py-4"><div className="h-4 bg-gray-300 rounded"></div></td>
-                                    <td className="border px-6 py-4"><div className="h-4 bg-gray-300 rounded"></div></td>
-                                    <td className="border px-6 py-4"><div className="h-4 bg-gray-300 rounded"></div></td>
-                                    <td className="border px-6 py-4"><div className="h-4 bg-gray-300 rounded"></div></td>
-                                    <td className="border px-6 py-4"><div className="h-4 bg-gray-300 rounded"></div></td>
-                                    <td className="border px-6 py-4"><div className="h-4 bg-gray-300 rounded"></div></td>
-                                    <td className="border px-6 py-4"><div className="h-4 bg-gray-300 rounded"></div></td>
-                                </tr>
-                            ))
-                        ) : (
-                            doctors.map((doctor, index) => (
-                                <tr key={doctor.id} className="hover:bg-gray-100 transition">
-                                    <td className="border px-6 py-4 text-center">
+            <div className="p-4">
+                {error ? (
+                    <div className="flex flex-col items-center text-red-500 w-2/4 m-auto mt-10">
+                        <FaExclamationTriangle className="text-red-600 text-9xl mb-4" />
+                        <p className="text-center font-semibold text-lg">{error}</p>
+                    </div>
+                ) : (
+                    <table className="min-w-full rounded-lg border">
+                        {!loading && (
+                            <thead>
+                                <tr className="bg-gray-100 text-gray-600 ">
+                                    <th className="px-6 py-3 border border-gray-300">
                                         <input
                                             type="checkbox"
-                                            checked={selectedDoctors.includes(doctor.id)}
-                                            onChange={() => handleSelectDoctor(doctor.id)}
+                                            onChange={handleSelectAll}
+                                            checked={selectedDoctors.length === doctors.length}
                                         />
-                                    </td>
-                                    <td className="border px-6 py-4 text-center">{index + 1}</td>
-                                    <td className="border px-6 py-4">{doctor.email}</td>
-                                    <td className="border px-6 py-4">{doctor.licenceNumber}</td>
-                                    <td className="border px-6 py-4 text-center">
-                                        <button
-                                            onClick={() => handleViewDocument(doctor.licenceDocument)}
-                                            className="text-blue-600 flex items-center justify-center mx-auto"
-                                        >
-                                            <FaEye className="mr-1" />
-                                            <span className="hidden sm:inline">View</span>
-                                        </button>
-                                    </td>
-                                    <td className="border px-6 py-4">{doctor.status}</td>
-                                    <td className="border px-6 py-4 text-center flex space-x-2 justify-center">
-                                        <button
-                                            className="text-green-600 hover:text-green-800 py-1"
-                                            title="Accept"
-                                        >
-                                            <FaCheck />
-                                        </button>
-                                        <button
-                                            className="text-red-600 hover:text-red-800"
-                                            title="Reject"
-                                        >
-                                            <FaTimes />
-                                        </button>
-                                    </td>
+                                    </th>
+                                    <th className="px-6 py-3 border border-gray-300">ID</th>
+                                    <th className="px-6 py-3 border border-gray-300">Email</th>
+                                    <th className="px-6 py-3 border border-gray-300">Licence Number</th>
+                                    <th className="px-6 py-3 border border-gray-300 text-center">Licence Document</th>
+                                    <th className="px-6 py-3 border border-gray-300">Status</th>
+                                    <th className="px-6 py-3 border border-gray-300 text-center">Action</th>
                                 </tr>
-                            ))
+                            </thead>
                         )}
-                    </tbody>
-                </table>
-                {!loading && doctors.length === 0 && <p className="mt-4 text-gray-500">No pending doctor requests</p>}
+                        <tbody>
+                            {loading ? (
+                                Array.from({ length: 5 }).map((_, index) => (
+                                    <tr key={index} className="animate-pulse">
+                                        <td className="border px-6 py-4"><div className="h-4 bg-gray-300 rounded"></div></td>
+                                        <td className="border px-6 py-4"><div className="h-4 bg-gray-300 rounded"></div></td>
+                                        <td className="border px-6 py-4"><div className="h-4 bg-gray-300 rounded"></div></td>
+                                        <td className="border px-6 py-4"><div className="h-4 bg-gray-300 rounded"></div></td>
+                                        <td className="border px-6 py-4"><div className="h-4 bg-gray-300 rounded"></div></td>
+                                        <td className="border px-6 py-4"><div className="h-4 bg-gray-300 rounded"></div></td>
+                                        <td className="border px-6 py-4"><div className="h-4 bg-gray-300 rounded"></div></td>
+                                    </tr>
+                                ))
+                            ) : (
+                                doctors.map((doctor, index) => (
+                                    <tr key={doctor.id} className="hover:bg-gray-100 transition">
+                                        <td className="border px-6 py-4 text-center">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedDoctors.includes(doctor.id)}
+                                                onChange={() => handleSelectDoctor(doctor.id)}
+                                            />
+                                        </td>
+                                        <td className="border px-6 py-4 text-center">{index + 1}</td>
+                                        <td className="border px-6 py-4">{doctor.email}</td>
+                                        <td className="border px-6 py-4">{doctor.licenceNumber}</td>
+                                        <td className="border px-6 py-4 text-center">
+                                            <button
+                                                onClick={() => handleViewDocument(doctor.licenceDocument)}
+                                                className="text-blue-600 flex items-center justify-center mx-auto"
+                                            >
+                                                <FaEye className="mr-1" />
+                                                <span className="hidden sm:inline">View</span>
+                                            </button>
+                                        </td>
+                                        <td className="border px-6 py-4">{doctor.status}</td>
+                                        <td className="border px-6 py-4 text-center flex space-x-2 justify-center">
+                                            <button
+                                                className="text-green-600 hover:text-green-800 py-1"
+                                                title="Accept"
+                                            >
+                                                <FaCheck />
+                                            </button>
+                                            <button
+                                                className="text-red-600 hover:text-red-800"
+                                                title="Reject"
+                                            >
+                                                <FaTimes />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                )}
+
+                {!loading && doctors.length === 0 && !error && (
+                    <p className="mt-4 text-gray-500">No pending doctor requests</p>
+                )}
 
                 {modalOpen && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50">
                         <div className="bg-white p-4 rounded shadow-lg max-w-lg w-full">
                             <h2 className="text-xl font-semibold mb-4">Licence Document</h2>
                             <img

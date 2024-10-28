@@ -30,8 +30,10 @@ const AdminSidebar = () => {
         <ul className="space-y-2">
           {/* Dashboard */}
           <li className="text-white flex items-center px-4 py-2 hover:bg-teal-600 cursor-pointer">
+          <Link to="/admin/dashboard" className="flex items-center w-full">
             <FaTachometerAlt className="mr-4" />
             <span className={`${!isOpen && 'hidden'}`}>Dashboard</span>
+            </Link>
           </li>
 
           {/* Doctor Request */}
