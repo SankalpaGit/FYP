@@ -1,54 +1,48 @@
 // src/components/AdminLogin.jsx
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { verifyEmail, loginAdmin } from '../../services/adminLoginService';
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [step, setStep] = useState(1); // Step 1: Email, Step 2: Password
+  const [step, setStep] = useState(1);
   const [error, setError] = useState('');
-  const [emailVerified, setEmailVerified] = useState(false); // Flag for email verification
+  const [emailVerified, setEmailVerified] = useState(false);
   const navigate = useNavigate();
 
   // Step 1: Verify if the email exists
   const handleEmailSubmit = async (e) => {
-    e.preventDefault(); // Prevent page refresh
+    e.preventDefault();
     setError('');
 
     try {
-      // Make request to check if email exists in the system
-      const response = await axios.post('http://localhost:5000/api/admin/verify-email', { email });
-
-      if (response.data.exists) {
-        setEmailVerified(true); // Move to password step
-        setStep(2); // Change step to show password input
+      const exists = await verifyEmail(email);
+      if (exists) {
+        setEmailVerified(true);
+        setStep(2);
       } else {
         setError('Email not found.');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Error verifying email.');
+      setError(err);
     }
   };
 
   // Step 2: Handle login with password
   const handlePasswordSubmit = async (e) => {
-    e.preventDefault(); // Prevent page refresh
+    e.preventDefault();
     setError('');
 
     try {
-      // Make POST request for login
-      const response = await axios.post('http://localhost:5000/api/admin/login', { email, password });
-
-      // Save token and redirect on successful login
-      localStorage.setItem('token', response.data.token);
-      const expirationTime = Date.now() + 10 * 1000; // Set expiration time to 10 seconds
+      const token = await loginAdmin(email, password);
+      localStorage.setItem('token', token);
+      const expirationTime = Date.now() + 10 * 1000;
       localStorage.setItem('tokenExpiry', expirationTime.toString());
       
-      console.log("Login successful, navigating to /admin/dashboard");
       navigate('/admin/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed.');
+      setError(err);
     }
   };
 
