@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const upload = require('../config/multer');
 const RegisterDoctor = require('../models/RegisterDoctor');
+const Doctor = require('../models/Doctor');
 const hashPassword = require('../utils/hashPassword');
 const generateToken = require('../utils/jwtToken');
 const verifyToken = require('../middlewares/authMiddleware');
@@ -67,22 +68,30 @@ router.get('/doctors/all', async (req, res) => {
 // PUT route to approve a doctor (admin)
 router.put('/doctor/approve/:id', verifyToken, async (req, res) => {
   try {
-    const doctor = await RegisterDoctor.findByPk(req.params.id);
+    const doctorRequest = await RegisterDoctor.findByPk(req.params.id);
 
-    if (!doctor) {
+    if (!doctorRequest) {
       return res.status(404).json({ error: 'Doctor not found' });
     }
 
-    // Only approve if the doctor is currently pending
-    if (doctor.status !== 'pending') {
-      return res.status(400).json({ error: `Doctor is already ${doctor.status}.` });
+    if (doctorRequest.status !== 'pending') {
+      return res.status(400).json({ error: `Doctor is already ${doctorRequest.status}.` });
     }
 
-    // Set doctor status to approved
-    doctor.status = 'approved';
-    await doctor.save();
+    // Set doctor status to approved in RegisterDoctor model
+    doctorRequest.status = 'approved';
+    await doctorRequest.save();
 
-    res.json({ message: 'Doctor approved successfully', doctor });
+    // Copy data to Doctor model
+    const newDoctor = await Doctor.create({
+      email: doctorRequest.email,
+      password: doctorRequest.password, // Ensure password is hashed already
+      licenseNumber: doctorRequest.licenceNumber,
+      certificate: doctorRequest.licenceDocument,
+      isApproved: true,
+    });
+
+    res.json({ message: 'Doctor approved successfully', doctor: newDoctor });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error approving doctor' });
@@ -90,35 +99,39 @@ router.put('/doctor/approve/:id', verifyToken, async (req, res) => {
 });
 
 // PUT route to reject a doctor (admin)
-router.put('/doctor/reject/:id', async (req, res) => {
+router.put('/doctor/reject/:id', verifyToken, async (req, res) => {
   try {
-    const doctor = await RegisterDoctor.findByPk(req.params.id);
-    if (!doctor) {
+    const doctorRequest = await RegisterDoctor.findByPk(req.params.id);
+
+    if (!doctorRequest) {
       return res.status(404).json({ error: 'Doctor not found' });
     }
 
-    doctor.status = 'rejected';
-    await doctor.save();
-    res.json({ message: 'Doctor rejected', doctor });
+    doctorRequest.status = 'rejected';
+    await doctorRequest.save();
+
+    res.json({ message: 'Doctor rejected', doctor: doctorRequest });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error rejecting doctor' });
   }
 });
 
+
+// POST route for login of doctor after approval
 router.post('/doctors/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Find the doctor by email
-    const doctor = await RegisterDoctor.findOne({ where: { email } });
+    // Find the doctor by email in the Doctor model
+    const doctor = await Doctor.findOne({ where: { email } });
 
     if (!doctor) {
       return res.status(404).json({ error: 'Doctor not found' });
     }
 
     // Check if the doctor is approved
-    if (doctor.status !== 'approved') {
+    if (!doctor.isApproved) {
       return res.status(403).json({ error: 'Doctor not approved' });
     }
 
