@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const sequelize = require('./config/database'); // Import the configured sequelize instance
 const RegisterDoctor = require('./models/RegisterDoctor'); // Import your model
 const Admin = require('./models/Admin'); // Import the Admin model
+const Doctor = require('./models/Doctor'); // Import the Admin model
 
 const doctorRoutes = require('./routes/doctorRegistrationRoutes'); // Import doctor authentication related routes
 const cors = require('cors'); 
@@ -19,6 +20,7 @@ app.use(express.json());
 // Use of the route
 app.use('/api', doctorRoutes); // Prefix with '/api' or any base URL 
 app.use('/api', adminLoginRoute)
+
 // Authenticate and sync models
 
 sequelize.authenticate()
