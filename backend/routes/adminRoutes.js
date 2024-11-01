@@ -39,7 +39,7 @@ router.post('/admin/login', async (req, res) => {
 // Route to verify if an admin email exists
 router.post('/admin/verify-email', async (req, res) => {
     const { email } = req.body;
-  0
+  
     try {
       // Check if the email exists in the Admin table
       const admin = await Admin.findOne({ where: { email } });
