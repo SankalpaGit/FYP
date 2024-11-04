@@ -119,7 +119,7 @@ router.put('/doctor/reject/:id', verifyToken, async (req, res) => {
 
 
 // POST route for login of doctor after approval
-router.post('/doctors/login', async (req, res) => {
+router.post('/doctor/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -152,5 +152,14 @@ router.post('/doctors/login', async (req, res) => {
   }
 });
 
+router.get('/doctors/approved', async (req, res) => {
+  try {
+    const approvedDoctors = await Doctor.findAll();
+    res.json(approvedDoctors);
+  } catch (error) {
+    console.error('Error fetching approved doctors:', error);
+    res.status(500).json({ error: 'Error fetching approved doctors' });
+  }
+});
 
 module.exports = router;
