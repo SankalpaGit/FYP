@@ -14,11 +14,10 @@ Chikitssakalya is a comprehensive doctor appointment system designed to simplify
 - **Frontend**: React
 - **Backend**: Node.js with Express
 - **Database**: MySQL
-- **OCR Library**: Tesseract.js (or any other preferred OCR tool)
+- **OCR Library**: Tesseract
 
 
 ### Prerequisites
 
 - Node.js (v14 or above)
 - MySQL
-- Environment setup for MySQL database
