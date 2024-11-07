@@ -33,6 +33,12 @@ router.post('/doctors/register', upload.single('licenceDocument'), upload.handle
       return res.status(400).json({ error: 'Licence document is required' });
     }
 
+     // Check if the email already exists
+     const existingDoctor = await RegisterDoctor.findOne({ where: { email } });
+     if (existingDoctor) {
+       return res.status(409).json({ error: 'Email already registered' });
+     }
+
     // Hash the password before storing it
     const hashedPassword = await hashPassword(password);
 
@@ -50,9 +56,16 @@ router.post('/doctors/register', upload.single('licenceDocument'), upload.handle
 
   } catch (error) {
     console.error(error);
+
+     // Handle duplicate entry error
+     if (error.code === 'ER_DUP_ENTRY') {
+      return res.status(409).json({ error: 'Email already registered' });
+    }
+
     return res.status(500).json({ error: 'Error during registration' });
   }
 });
+
 
 // GET route to list all doctors (for admin to view)
 router.get('/doctors/all', async (req, res) => {
