@@ -10,6 +10,9 @@ import ProtectedRoute from "./secure/ProtectedRoute";
 import DoctorApproval from "./pages/admin/DoctorApproval";
 import DoctorUser from "./pages/admin/DoctorUser";
 import PatientUser from "./pages/admin/PatientUser";
+import LoginForm from "./pages/patients/LoginForm";
+import RegisterForm from "./pages/patients/RegisterForm";
+import HomePage from "./pages/patients/HomePage";
 
 function App() {
 
@@ -32,12 +35,14 @@ function App() {
         </ProtectedRoute>} />
       <Route path="/" element={<LandingPage />} />
       <Route path="/admin" element={<Credential />} />
-      < Route path="/admin/user/doctor" element= { <DoctorUser/> } />
-      < Route path="/admin/user/patient" element= { <PatientUser/> } />
-      
-      {/* route setup for patient user */}
+      < Route path="/admin/user/doctor" element={<DoctorUser />} />
+      < Route path="/admin/user/patient" element={<PatientUser />} />
 
-        
+      {/* route setup for patient user */}
+      <Route path="/login" element={<LoginForm />} />
+      <Route path="/register" element={<RegisterForm />} />
+      <Route path='/home' element={<HomePage />} />
+      
       {/* 404 page */}
       <Route path="*" element={<NotFound />} />
     </Routes>
