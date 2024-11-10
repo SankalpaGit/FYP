@@ -8,13 +8,14 @@ const Doctor = require('./models/Doctor'); // Import the Admin model
 const doctorRoutes = require('./routes/doctorRegistrationRoutes'); // Import doctor authentication related routes
 const cors = require('cors'); 
 const adminLoginRoute = require('./routes/adminRoutes')
-// Enable CORS for all routes and origins
 
-
+// configuration of the dotenv variable
 dotenv.config();
 
 const app = express();
+// Enable CORS for all routes and origins
 app.use(cors());
+
 app.use(express.json());
 
 // Use of the route
@@ -29,14 +30,14 @@ sequelize.authenticate()
     return sequelize.sync(); // Sync all models means create the database table
   })
   .then(() => {
-    console.log('Models synced successfully.');
+    console.log('Models synced successfully.'); //debugging 
   })
   .catch((err) => {
-    console.error('Error connecting to the database:', err);
+    console.error('Error connecting to the database:', err); // debugging
   });
 
 app.get('/', (req, res) => {
-  res.send('Chikitsakalaya server is running');
+  res.send('Chikitsakalaya server is running'); // sending the response
 });
 
 module.exports = app;
