@@ -31,15 +31,7 @@ const DoctorNavbar = () => {
 
     return (
         <div className="flex justify-between items-center bg-custom-bg p-4 shadow-md">
-            {/* Left Section: Search Bar */}
-            <div className="flex items-center w-1/3">
-                <FaSearch className="mr-2 text-gray-600" />
-                <input
-                    type="text"
-                    placeholder="Search..."
-                    className="bg-gray-100 rounded-full px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-teal-500"
-                />
-            </div>
+           <img src="/projects/naming.png" alt="" srcset="" className='w-40'/>
 
             {/* Right Section: Notification and Profile */}
             <div className="flex items-center space-x-8 w-1/3 justify-end">

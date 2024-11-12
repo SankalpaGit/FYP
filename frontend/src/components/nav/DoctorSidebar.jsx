@@ -1,104 +1,85 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { MdMarkUnreadChatAlt } from "react-icons/md";
-import { FaTachometerAlt, FaUserInjured, FaCalendarCheck, FaMoneyBillAlt, FaCommentAlt, FaBars, FaCaretDown, FaClock } from 'react-icons/fa';
+import { FaTachometerAlt, FaUserInjured, FaCalendarCheck, FaMoneyBillAlt, FaCommentAlt, FaClock, FaTasks, FaClipboardList, FaCalendarDay } from 'react-icons/fa';
 
 const DoctorSidebar = () => {
-  const [isOpen, setIsOpen] = useState(true);
-  const [isPatientsDropdownOpen, setIsPatientsDropdownOpen] = useState(false);
-  const [isAppointmentsDropdownOpen, setIsAppointmentsDropdownOpen] = useState(false);
-  const [isAvailabilityDropdownOpen, setIsAvailabilityDropdownOpen] = useState(false);
-
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const togglePatientsDropdown = () => {
-    setIsPatientsDropdownOpen(!isPatientsDropdownOpen);
-  };
-
-  const toggleAppointmentsDropdown = () => {
-    setIsAppointmentsDropdownOpen(!isAppointmentsDropdownOpen);
-  };
-
-  const toggleAvailabilityDropdown = () => {
-    setIsAvailabilityDropdownOpen(!isAvailabilityDropdownOpen);
-  };
-
   return (
-    <div className={`flex flex-col ${isOpen ? 'w-64' : 'w-20'} h-screen bg-white transition-all duration-300 shadow-md`}>
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
-        <span className={`text-gray-700 text-xl font-bold ${!isOpen && 'hidden'}`}>Doctor Portal</span>
-        <FaBars className="text-gray-700 cursor-pointer" onClick={toggleSidebar} />
+    <div className="flex flex-col w-20 h-screen bg-white shadow-md">
+      <div className="flex items-center justify-center px-4 py-3">
+        <img src="/projects/logo.png" alt="Logo" className="w-14 h-auto" /> {/* Increased logo size */}
       </div>
 
-      <nav className="mt-4">
-        <ul className="space-y-4">
+      <nav className="">
+        <ul className="space-y-6"> {/* Added space-y-6 for vertical spacing */}
           {/* Dashboard */}
-          <li className="text-gray-500 font-semibold flex items-center px-6 py-2 hover:text-teal-700 cursor-pointer">
-            <FaTachometerAlt className="mr-4" />
-            <span className={`${!isOpen && 'hidden'}`}>Dashboard</span>
+          <li className="relative group flex justify-center mt-6 mb-6">
+            <FaTachometerAlt className="text-teal-600 text-2xl" /> {/* Increased icon size */}
+            <span className="absolute left-16 opacity-0 group-hover:opacity-100 bg-white text-teal-800 font-semibold px-2 py-1 rounded-md shadow-lg transition-opacity duration-300 whitespace-nowrap">
+              Dashboard
+            </span>
           </li>
 
-          {/* Personalization Section with Dropdown */}
-          <li className="text-gray-500 font-semibold flex items-center px-6 py-2 hover:text-teal-700 cursor-pointer" onClick={toggleAvailabilityDropdown}>
-            <FaClock className="mr-4" />
-            <span className={`${!isOpen && 'hidden'}`}>Personalization</span>
-            {isOpen && <FaCaretDown className={`ml-auto transition-transform ${isAvailabilityDropdownOpen ? 'rotate-180' : ''}`} />}
+          {/* Personalization - Set Free Time */}
+          <li className="relative group flex justify-center mt-6 mb-6">
+            <FaClock className="text-teal-600 text-2xl" /> {/* Increased icon size */}
+            <span className="absolute left-16 opacity-0 group-hover:opacity-100 bg-white text-teal-800 font-semibold px-2 py-1 rounded-md shadow-lg transition-opacity duration-300 whitespace-nowrap">
+              Set Free Time
+            </span>
           </li>
 
-          {/* Dropdown for Availability */}
-          {isAvailabilityDropdownOpen && isOpen && (
-            <ul className="ml-8 space-y-2 mt-2">
-              <li className="text-gray-500 font-semibold px-6 py-2 hover:text-teal-700 cursor-pointer">
-                <span>Set Free Time</span>
-              </li>
-              <li className="text-gray-500 font-semibold px-6 py-2 hover:text-teal-700 cursor-pointer">
-                <span>To-Do List</span>
-              </li>
-            </ul>
-          )}
-
-          {/* Appointments Section with Dropdown */}
-          <li className="text-gray-500 font-semibold flex items-center px-6 py-2 hover:text-teal-700 cursor-pointer" onClick={toggleAppointmentsDropdown}>
-            <FaCalendarCheck className="mr-4" />
-            <span className={`${!isOpen && 'hidden'}`}>Appointments</span>
-            {isOpen && <FaCaretDown className={`ml-auto transition-transform ${isAppointmentsDropdownOpen ? 'rotate-180' : ''}`} />}
+          {/* Personalization - To-Do List */}
+          <li className="relative group flex justify-center mt-6 mb-6">
+            <FaTasks className="text-teal-600 text-2xl" /> {/* Increased icon size */}
+            <span className="absolute left-16 opacity-0 group-hover:opacity-100 bg-white text-teal-800 font-semibold px-2 py-1 rounded-md shadow-lg transition-opacity duration-300 whitespace-nowrap">
+              To-Do List
+            </span>
+          </li>
+          {/* Appointments - Requests */}
+          <li className="relative group flex justify-center mt-6 mb-6">
+            <FaCalendarCheck className="text-teal-600 text-2xl" /> {/* Increased icon size */}
+            <span className="absolute left-16 opacity-0 group-hover:opacity-100 bg-white text-teal-800 font-semibold px-2 py-1 rounded-md shadow-lg transition-opacity duration-300 whitespace-nowrap">
+              Appointment Requests
+            </span>
           </li>
 
-          {/* Dropdown for Appointments */}
-          {isAppointmentsDropdownOpen && isOpen && (
-            <ul className="ml-8 space-y-2 mt-2">
-              <li className="text-gray-500 font-semibold px-6 py-2 hover:text-teal-700 cursor-pointer">
-                <span>Requests</span>
-              </li>
-              <li className="text-gray-500 font-semibold px-6 py-2 hover:text-teal-700 cursor-pointer">
-                <span>Upcoming</span>
-              </li>
-            </ul>
-          )}
+          {/* Appointments - Upcoming */}
+          <li className="relative group flex justify-center mt-6 mb-6">
+            <FaCalendarDay className="text-teal-600 text-2xl" /> {/* Increased icon size */}
+            <span className="absolute left-16 opacity-0 group-hover:opacity-100 bg-white text-teal-800 font-semibold px-2 py-1 rounded-md shadow-lg transition-opacity duration-300 whitespace-nowrap">
+              Upcoming Appointments
+            </span>
+          </li>
 
           {/* Patient History */}
-          <li className="text-gray-500 font-semibold flex items-center px-6 py-2 hover:text-teal-700 cursor-pointer">
-            <FaUserInjured className="mr-4" />
-            <span className={`${!isOpen && 'hidden'}`}>Patient History</span>
+          <li className="relative group flex justify-center mt-6 mb-6">
+            <FaUserInjured className="text-teal-600 text-2xl" /> {/* Increased icon size */}
+            <span className="absolute left-16 opacity-0 group-hover:opacity-100 bg-white text-teal-800 font-semibold px-2 py-1 rounded-md shadow-lg transition-opacity duration-300 whitespace-nowrap">
+              Patient History
+            </span>
           </li>
 
           {/* Payments */}
-          <li className="text-gray-500 font-semibold flex items-center px-6 py-2 hover:text-teal-700 cursor-pointer">
-            <FaMoneyBillAlt className="mr-4" />
-            <span className={`${!isOpen && 'hidden'}`}>Payments</span>
+          <li className="relative group flex justify-center mt-6 mb-6">
+            <FaMoneyBillAlt className="text-teal-600 text-2xl" /> {/* Increased icon size */}
+            <span className="absolute left-16 opacity-0 group-hover:opacity-100 bg-white text-teal-800 font-semibold px-2 py-1 rounded-md shadow-lg transition-opacity duration-300 whitespace-nowrap">
+              Payments
+            </span>
           </li>
 
           {/* Chats */}
-          <li className="text-gray-500 font-semibold flex items-center px-6 py-2 hover:text-teal-700 cursor-pointer">
-            <MdMarkUnreadChatAlt className="mr-4" />
-            <span className={`${!isOpen && 'hidden'}`}>Chats</span>
+          <li className="relative group flex justify-center mt-6 mb-6">
+            <MdMarkUnreadChatAlt className="text-teal-600 text-2xl" /> {/* Increased icon size */}
+            <span className="absolute left-16 opacity-0 group-hover:opacity-100 bg-white text-teal-800 font-semibold px-2 py-1 rounded-md shadow-lg transition-opacity duration-300 whitespace-nowrap">
+              Chats
+            </span>
           </li>
 
           {/* Feedback */}
-          <li className="text-gray-500 font-semibold flex items-center px-6 py-2 hover:text-teal-700 cursor-pointer">
-            <FaCommentAlt className="mr-4" />
-            <span className={`${!isOpen && 'hidden'}`}>Feedback</span>
+          <li className="relative group flex justify-center mt-6 mb-6">
+            <FaCommentAlt className="text-teal-600 text-2xl" /> {/* Increased icon size */}
+            <span className="absolute left-16 opacity-0 group-hover:opacity-100 bg-white text-teal-800 font-semibold px-2 py-1 rounded-md shadow-lg transition-opacity duration-300 whitespace-nowrap">
+              Feedback
+            </span>
           </li>
         </ul>
       </nav>
