@@ -43,7 +43,7 @@ function App() {
       <Route path="/register" element={<RegisterForm />} />
       <Route path='/home' element={<HomePage />} />
       
-      {/* 404 page */}
+      {/* 404 page when path not found */}
       <Route path="*" element={<NotFound />} />
     </Routes>
 
