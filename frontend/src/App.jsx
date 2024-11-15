@@ -13,6 +13,8 @@ import PatientUser from "./pages/admin/PatientUser";
 import LoginForm from "./pages/patients/LoginForm";
 import RegisterForm from "./pages/patients/RegisterForm";
 import HomePage from "./pages/patients/HomePage";
+import SetFreeTime from "./pages/doctors/SetFreeTime";
+import ToDoList from "./pages/doctors/ToDoList";
 
 function App() {
 
@@ -23,6 +25,8 @@ function App() {
       <Route path="/doctor" element={<Signup />} />
       <Route path="/doctor/login" element={<Login />} />
       <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
+      <Route path="/doctor/schedule" element={<SetFreeTime/>} />
+      <Route path="/doctor/tasks" element={<ToDoList/>} />
 
       {/* route setup for admin user */}
       <Route path="/admin/dashboard" element={
