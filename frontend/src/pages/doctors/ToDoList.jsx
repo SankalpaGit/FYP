@@ -6,6 +6,7 @@ const ToDoList = () => {
     return (
         <DoctorLayout>
             <BiTask  className='text-10x text-orange-600 m-auto'/>
+            <p>no task added</p>
         </DoctorLayout>
     )
 }
