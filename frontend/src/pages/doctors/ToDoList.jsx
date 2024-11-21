@@ -1,65 +1,67 @@
 import React, { useState } from "react";
 import DoctorLayout from "../../layouts/DoctorLayout";
-import { BiTask } from "react-icons/bi";
-import { AiOutlinePlus, AiOutlineDelete } from "react-icons/ai";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { AiOutlineDelete } from "react-icons/ai";
 
 const ToDoList = () => {
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState({
+    missed: [],
+    upcoming: [],
+    completed: [],
+  });
   const [newTask, setNewTask] = useState("");
-  const [popupVisible, setPopupVisible] = useState(false);
-  const [currentTaskIndex, setCurrentTaskIndex] = useState(null);
-  const [taskDetails, setTaskDetails] = useState({ deadline: "", description: "" });
 
-  // Add a new task
+  // Handle adding new tasks to the "Upcoming" column
   const handleAddTask = () => {
     if (newTask.trim()) {
-      setTasks([...tasks, { text: newTask, completed: false, deadline: "", description: "" }]);
+      setTasks({
+        ...tasks,
+        upcoming: [
+          ...tasks.upcoming,
+          { id: Date.now().toString(), text: newTask },
+        ],
+      });
       setNewTask("");
     }
   };
 
-  // Open the popup for editing task details
-  const openPopup = (index) => {
-    setCurrentTaskIndex(index);
-    setTaskDetails({
-      deadline: tasks[index].deadline || "",
-      description: tasks[index].description || "",
+  // Handle drag-and-drop logic
+  const onDragEnd = (result) => {
+    const { source, destination } = result;
+
+    // If dropped outside the list, return early
+    if (!destination) return;
+
+    const sourceList = tasks[source.droppableId];
+    const destinationList = tasks[destination.droppableId];
+
+    // Move the task from the source list to the destination list
+    const [removed] = sourceList.splice(source.index, 1);
+    destinationList.splice(destination.index, 0, removed);
+
+    // Update the tasks state
+    setTasks({
+      ...tasks,
+      [source.droppableId]: sourceList,
+      [destination.droppableId]: destinationList,
     });
-    setPopupVisible(true);
   };
 
-  // Close the popup
-  const closePopup = () => {
-    setPopupVisible(false);
-    setTaskDetails({ deadline: "", description: "" });
-  };
-
-  // Save task details
-  const saveTaskDetails = () => {
-    const updatedTasks = tasks.map((task, index) =>
-      index === currentTaskIndex
-        ? { ...task, deadline: taskDetails.deadline, description: taskDetails.description }
-        : task
-    );
-    setTasks(updatedTasks);
-    closePopup();
-  };
-
-  // Delete a task
-  const deleteTask = (index) => {
-    const updatedTasks = tasks.filter((_, i) => i !== index);
-    setTasks(updatedTasks);
+  // Delete a task from any column
+  const deleteTask = (column, index) => {
+    const updatedColumn = tasks[column].filter((_, i) => i !== index);
+    setTasks({ ...tasks, [column]: updatedColumn });
   };
 
   return (
     <DoctorLayout>
-      <div className="p-6 bg-white shadow rounded-md max-w-2xl mx-auto">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-gray-800">To-Do List</h2>
-          <BiTask className="text-3xl text-orange-600" />
-        </div>
+      <div className="p-6 bg-white shadow rounded-md max-w-4xl mx-auto">
+        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+          Drag-and-Drop To-Do List
+        </h2>
 
-        <div className="flex items-center mb-4">
+        {/* Input for adding new tasks */}
+        <div className="flex items-center mb-6">
           <input
             type="text"
             placeholder="Add a new task..."
@@ -71,89 +73,60 @@ const ToDoList = () => {
             onClick={handleAddTask}
             className="bg-orange-500 text-white px-4 py-2 rounded-r-md hover:bg-orange-600 transition"
           >
-            <AiOutlinePlus className="inline" />
+            Add Task
           </button>
         </div>
 
-        {tasks.length === 0 ? (
-          <p className="text-gray-500 text-center">No tasks added yet.</p>
-        ) : (
-          <ul className="space-y-3">
-            {tasks.map((task, index) => (
-              <li
-                key={index}
-                className={`p-3 border rounded-md ${
-                  task.completed ? "bg-green-50 line-through" : "bg-white"
-                }`}
-                onClick={() => openPopup(index)}
-              >
-                <div className="flex justify-between items-center">
-                  <span className="text-lg font-medium">{task.text}</span>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteTask(index);
-                    }}
-                    className="text-red-500 hover:text-red-600"
+        {/* Drag-and-Drop Columns */}
+        <DragDropContext onDragEnd={onDragEnd}>
+          <div className="grid grid-cols-3 gap-6">
+            {["missed", "upcoming", "completed"].map((column) => (
+              <Droppable key={column} droppableId={column}>
+                {(provided) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    className="bg-gray-100 p-4 rounded-lg shadow-md"
                   >
-                    <AiOutlineDelete />
-                  </button>
-                </div>
-                {task.deadline && (
-                  <p className="text-sm text-gray-500">Deadline: {task.deadline}</p>
+                    <h3 className="text-lg font-semibold text-gray-700 capitalize mb-4">
+                      {column}
+                    </h3>
+                    {tasks[column].length === 0 ? (
+                      <p className="text-gray-500 text-center">No tasks</p>
+                    ) : (
+                      tasks[column].map((task, index) => (
+                        <Draggable
+                          key={task.id}
+                          draggableId={task.id}
+                          index={index}
+                        >
+                          {(provided) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              className="p-3 mb-3 bg-white border rounded-md shadow flex justify-between items-center"
+                            >
+                              <span>{task.text}</span>
+                              <button
+                                onClick={() => deleteTask(column, index)}
+                                className="text-red-500 hover:text-red-600"
+                              >
+                                <AiOutlineDelete />
+                              </button>
+                            </div>
+                          )}
+                        </Draggable>
+                      ))
+                    )}
+                    {provided.placeholder}
+                  </div>
                 )}
-                {task.description && (
-                  <p className="text-sm text-gray-600">Description: {task.description}</p>
-                )}
-              </li>
+              </Droppable>
             ))}
-          </ul>
-        )}
-      </div>
-
-      {/* Popup Form */}
-      {popupVisible && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-            <h3 className="text-lg font-bold mb-4">Edit Task</h3>
-            <label className="block mb-2">
-              Deadline:
-              <input
-                type="date"
-                value={taskDetails.deadline}
-                onChange={(e) =>
-                  setTaskDetails({ ...taskDetails, deadline: e.target.value })
-                }
-                className="block w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
-              />
-            </label>
-            <label className="block mb-2">
-              Description:
-              <textarea
-                value={taskDetails.description}
-                onChange={(e) =>
-                  setTaskDetails({ ...taskDetails, description: e.target.value })
-                }
-                className="block w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
-              ></textarea>
-            </label>
-            <div className="flex justify-end space-x-3 mt-4">
-              <button
-                onClick={closePopup}
-                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={saveTaskDetails}
-                className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600"
-              >
-                Save
-              </button>
-            </div>
           </div>
-        </div>
-      )}
+        </DragDropContext>
+      </div>
     </DoctorLayout>
   );
 };
