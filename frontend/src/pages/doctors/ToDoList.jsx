@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import DoctorLayout from "../../layouts/DoctorLayout";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { AiOutlineDelete } from "react-icons/ai";
 
 const ToDoList = () => {
@@ -11,7 +11,6 @@ const ToDoList = () => {
   });
   const [newTask, setNewTask] = useState("");
 
-  // Handle adding new tasks to the "Upcoming" column
   const handleAddTask = () => {
     if (newTask.trim()) {
       setTasks({
@@ -25,21 +24,17 @@ const ToDoList = () => {
     }
   };
 
-  // Handle drag-and-drop logic
   const onDragEnd = (result) => {
     const { source, destination } = result;
 
-    // If dropped outside the list, return early
     if (!destination) return;
 
-    const sourceList = tasks[source.droppableId];
-    const destinationList = tasks[destination.droppableId];
+    const sourceList = Array.from(tasks[source.droppableId]);
+    const destinationList = Array.from(tasks[destination.droppableId]);
 
-    // Move the task from the source list to the destination list
-    const [removed] = sourceList.splice(source.index, 1);
-    destinationList.splice(destination.index, 0, removed);
+    const [movedItem] = sourceList.splice(source.index, 1);
+    destinationList.splice(destination.index, 0, movedItem);
 
-    // Update the tasks state
     setTasks({
       ...tasks,
       [source.droppableId]: sourceList,
@@ -47,37 +42,37 @@ const ToDoList = () => {
     });
   };
 
-  // Delete a task from any column
   const deleteTask = (column, index) => {
     const updatedColumn = tasks[column].filter((_, i) => i !== index);
     setTasks({ ...tasks, [column]: updatedColumn });
   };
 
+  // Define the background colors for each column
+  const columnColors = {
+    missed: "bg-red-100",
+    upcoming: "bg-blue-100",
+    completed: "bg-green-50",
+  };
+
   return (
     <DoctorLayout>
-      <div className="p-6 bg-white shadow rounded-md max-w-4xl mx-auto">
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
-          Drag-and-Drop To-Do List
-        </h2>
-
-        {/* Input for adding new tasks */}
+      <div className="p-6 bg-white shadow rounded-md max-w-6xl mx-auto">
         <div className="flex items-center mb-6">
           <input
             type="text"
             placeholder="Add a new task..."
             value={newTask}
             onChange={(e) => setNewTask(e.target.value)}
-            className="flex-1 px-4 py-2 border rounded-l-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="flex-1 px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none "
           />
           <button
             onClick={handleAddTask}
-            className="bg-orange-500 text-white px-4 py-2 rounded-r-md hover:bg-orange-600 transition"
+            className="bg-orange-500 text-white px-6 py-2 rounded-r-md hover:bg-orange-600 transition"
           >
             Add Task
           </button>
         </div>
 
-        {/* Drag-and-Drop Columns */}
         <DragDropContext onDragEnd={onDragEnd}>
           <div className="grid grid-cols-3 gap-6">
             {["missed", "upcoming", "completed"].map((column) => (
@@ -86,40 +81,48 @@ const ToDoList = () => {
                   <div
                     ref={provided.innerRef}
                     {...provided.droppableProps}
-                    className="bg-gray-100 p-4 rounded-lg shadow-md"
+                    className={`p-4 rounded-lg border-2 border-gray-200 ${
+                      columnColors[column]
+                    }`}
                   >
-                    <h3 className="text-lg font-semibold text-gray-700 capitalize mb-4">
-                      {column}
+                    <h3 className="text-xl font-semibold text-gray-700 capitalize mb-3 text-center py-2 rounded-md">
+                      {column.charAt(0).toUpperCase() + column.slice(1)}
                     </h3>
-                    {tasks[column].length === 0 ? (
-                      <p className="text-gray-500 text-center">No tasks</p>
-                    ) : (
-                      tasks[column].map((task, index) => (
-                        <Draggable
-                          key={task.id}
-                          draggableId={task.id}
-                          index={index}
-                        >
-                          {(provided) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              className="p-3 mb-3 bg-white border rounded-md shadow flex justify-between items-center"
-                            >
-                              <span>{task.text}</span>
-                              <button
-                                onClick={() => deleteTask(column, index)}
-                                className="text-red-500 hover:text-red-600"
+                    <div className="w-full bg-gray-400 h-0.5"></div>
+                    <div className="space-y-2 overflow-y-auto max-h-64 mt-2">
+                      {tasks[column].length === 0 ? (
+                        <p className="text-gray-500 text-center italic">
+                          No tasks
+                        </p>
+                      ) : (
+                        tasks[column].map((task, index) => (
+                          <Draggable
+                            key={task.id}
+                            draggableId={task.id}
+                            index={index}
+                          >
+                            {(provided) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                className="flex justify-between items-center p-3 bg-white border rounded-md shadow-sm hover:bg-gray-50 transition"
                               >
-                                <AiOutlineDelete />
-                              </button>
-                            </div>
-                          )}
-                        </Draggable>
-                      ))
-                    )}
-                    {provided.placeholder}
+                                <span>{task.text}</span>
+                                <button
+                                  onClick={() => deleteTask(column, index)}
+                                  className="text-red-500 hover:text-red-600 focus:outline-none"
+                                  aria-label="Delete task"
+                                >
+                                  <AiOutlineDelete size={18} />
+                                </button>
+                              </div>
+                            )}
+                          </Draggable>
+                        ))
+                      )}
+                      {provided.placeholder}
+                    </div>
                   </div>
                 )}
               </Droppable>
